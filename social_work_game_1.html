@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>彩虹下的童心守護者：社工 Yanki 的彩虹邨物語</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Noto Sans TC', sans-serif;
+            touch-action: manipulation;
+        }
+        body {
+            background-color: #0d1322;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .bg-rainbow-gradient {
+            background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(56,189,248,0.15), rgba(251,191,36,0.15));
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .choice-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .choice-btn:active {
+            transform: scale(0.97);
+        }
+        /* Custom scrollbar for game text box */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(244, 114, 182, 0.4);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex justify-center items-center p-2 sm:p-4">
+
+    <!-- Mobile-optimized main container -->
+    <div id="app-container" class="w-full max-w-md h-[92vh] max-h-[840px] flex flex-col justify-between glass-card rounded-3xl overflow-hidden shadow-2xl relative border border-slate-700/80">
+        
+        <!-- Header Bar / Top Status -->
+        <header class="p-4 border-b border-slate-800 bg-slate-900/90 flex justify-between items-center z-10 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-xl shadow-md border border-white/20">
+                    👧‍⚕️
+                </div>
+                <div>
+                    <div class="font-bold text-pink-300 text-sm flex items-center gap-1">
+                        社工 Yanki
+                        <span class="text-[9px] bg-pink-500/20 text-pink-300 px-1.5 py-0.5 rounded border border-pink-400/30">RSW 兒童服務</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400" id="current-location">📍 彩虹邨紫薇樓</div>
+                </div>
+            </div>
+
+            <!-- Stats: Empathy Power & Time -->
+            <div class="flex flex-col items-end gap-1">
+                <div class="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                    <i class="fa-solid fa-heart text-pink-400 text-xs"></i>
+                    <span>同理心: <strong id="stat-empathy" class="text-pink-300">100</strong></span>
+                </div>
+                <div class="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                    <i class="fa-solid fa-child text-sky-400 text-xs"></i>
+                    <span>童心信任: <strong id="stat-trust" class="text-sky-300">0</strong></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Visual Illustration Header -->
+        <div id="scene-banner" class="relative h-40 sm:h-48 w-full bg-slate-950 flex flex-col justify-end p-4 overflow-hidden shrink-0 border-b border-slate-800">
+            <div id="scene-bg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-60" style="background-image: url('https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=800&auto=format&fit=crop');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+            
+            <!-- Rainbow Stripe Banner Accent -->
+            <div class="absolute top-0 left-0 right-0 h-1.5 flex">
+                <div class="flex-1 bg-red-500"></div>
+                <div class="flex-1 bg-orange-500"></div>
+                <div class="flex-1 bg-yellow-500"></div>
+                <div class="flex-1 bg-green-500"></div>
+                <div class="flex-1 bg-cyan-500"></div>
+                <div class="flex-1 bg-blue-500"></div>
+                <div class="flex-1 bg-purple-500"></div>
+            </div>
+
+            <!-- Speaker Label & Emotion -->
+            <div class="relative z-10 flex items-center gap-2">
+                <span id="speaker-avatar" class="text-2xl">👧‍⚕️</span>
+                <div>
+                    <span id="speaker-name" class="font-black text-amber-300 text-base tracking-wide block">社工 Yanki</span>
+                    <span id="speaker-title" class="text-[10px] text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-full border border-slate-700 inline-block">彩虹邨兒童及青少年服務中心</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Story Dialogue & Narrative Container -->
+        <main class="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3 bg-slate-900/50 flex flex-col justify-start relative">
+            <div id="narrative-text" class="text-sm sm:text-base leading-relaxed text-slate-200 font-medium space-y-2.5">
+                <!-- Text populated dynamically -->
+            </div>
+        </main>
+
+        <!-- Player Choices & Actions Panel -->
+        <footer id="choices-container" class="p-4 bg-slate-950/90 border-t border-slate-800 flex flex-col gap-2.5 shrink-0 z-10">
+            <!-- Buttons dynamically generated -->
+        </footer>
+
+        <!-- Start / Restart / Victory Modal Overlay -->
+        <div id="modal-screen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-30 flex flex-col justify-center items-center p-6 text-center">
+            <div class="w-16 h-16 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center text-3xl mb-3 border border-pink-500/30">
+                🌈
+            </div>
+            <h1 id="modal-title" class="text-2xl font-black text-pink-300 mb-2">彩虹下的童心守護者</h1>
+            <p id="modal-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
+                歡迎來到彩虹邨！你將扮演兒童服務註冊社工 <strong class="text-pink-400">Yanki</strong>。在這裡，你將深入紫薇樓、丹鳳樓及彩虹操場，傾聽孩子們未說出口的心聲，化解學業壓力、家長焦慮與孤獨迷惘。
+            </p>
+            <button id="btn-start-game" class="w-full py-3.5 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition">
+                進入 Yanki 的社工日常
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+    // Audio Synthesizer for SFX & Atmosphere
+    class SoundEngine {
+        constructor() {
+            this.ctx = null;
+        }
+        init() {
+            if (!this.ctx) {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        playTone(freq, type, duration, vol = 0.1) {
+            if (!this.ctx) return;
+            try {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            } catch(e) {}
+        }
+        playChoiceSFX() {
+            this.playTone(440, 'sine', 0.12, 0.08);
+            setTimeout(() => this.playTone(554.37, 'sine', 0.15, 0.08), 60);
+        }
+        playPositiveSFX() {
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                setTimeout(() => this.playTone(f, 'triangle', 0.2, 0.1), i * 90);
+            });
+        }
+        playCareSFX() {
+            this.playTone(349.23, 'sine', 0.2, 0.12);
+            setTimeout(() => this.playTone(440.00, 'sine', 0.3, 0.1), 120);
+        }
+    }
+
+    const sound = new SoundEngine();
+
+    // Game Player State
+    let gameState = {
+        empathy: 100,
+        trust: 0,
+        currentSceneId: 'start',
+        savedChildren: []
+    };
+
+    // Interactive Narrative Script Nodes
+    const STORY_NODES = {
+        'start': {
+            location: '📍 彩虹邨中心辦公室',
+            bg: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '兒童及青少年服務隊社工',
+            text: [
+                "下午三點半，彩虹邨的聖公會靜宜女子中學和鄰近的小學陸續放學。",
+                "我是 Yanki，一名專注於兒童及青少年服務的註冊社工。彩虹邨標誌性的七彩樓牌下，除了無數拍照打卡的遊客，還住著許多需要被傾聽的孩子。",
+                "今天中心督導傳來一份個案通知，彩虹邨紫薇樓附近有幾名需要關懷的學童。我整理好社工證與遊戲治療繪本，準備出發。"
+            ],
+            choices: [
+                { text: "前往彩虹邨七彩籃球場（探訪獨自留連的小學童）", next: 'basketball_court', empathyDelta: 0, trustDelta: 0 },
+                { text: "前往紫薇樓天井梯間（關懷提早離開學校的小學員）", next: 'stairwell_case', empathyDelta: 0, trustDelta: 0 }
+            ]
+        },
+
+        // Chapter 1 Case A: Basketball Court (Ming's loneliness)
+        'basketball_court': {
+            location: '📍 彩虹邨七彩籃球場',
+            bg: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop',
+            speaker: '小明 (小三)',
+            avatar: '👦',
+            title: '彩虹邨居民 • 獨自拍球中',
+            text: [
+                "籃球場上陽光刺眼，一個穿著小學校服的小男孩『小明』正獨自向著籃框拍球，球一次次彈開，他的眼神顯得有些落寞。",
+                "已經下午五點了，其他小朋友都被家長接走，唯獨小明一個人在這裡打轉。"
+            ],
+            choices: [
+                { text: "【遊戲治療介入】拿著玩具球走過去：「小明，Yanki 姐姐可以同你一齊玩投籃遊戲嗎？」", next: 'ming_play_approach', empathyDelta: 0, trustDelta: 10 },
+                { text: "【直接問詢】「小明，咁夜仲唔返屋企？爸爸媽媽呢？」", next: 'ming_direct_approach', empathyDelta: -5, trustDelta: 0 }
+            ]
+        },
+
+        'ming_play_approach': {
+            location: '📍 彩虹邨七彩籃球場',
+            bg: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop',
+            speaker: '小明 (小三)',
+            avatar: '👦',
+            title: '情緒放鬆中',
+            text: [
+                "小明停下動作，眼睛閃過一絲驚喜，隨後有些害羞地點點頭。",
+                "透過輕鬆的投籃比拼遊戲，小明漸漸卸下心防，開始主動開口：「爸爸媽媽每日都要做雙份工，放學後屋企冇人，我唔想一個人待在黑漆漆的客廳……」"
+            ],
+            choices: [
+                { text: "【同理心共情】「一個人待在屋企一定覺得好寂寞，小明好懂事好堅強。」", next: 'ming_empathy_win', empathyDelta: 10, trustDelta: 20 },
+                { text: "【提供課後託管資源】「你可以來我們彩虹邨兒童中心，有課後託管同導師教做功課喔！」", next: 'ming_resource_referral', empathyDelta: 5, trustDelta: 15 }
+            ]
+        },
+
+        'ming_direct_approach': {
+            location: '📍 彩虹邨七彩籃球場',
+            bg: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop',
+            speaker: '小明 (小三)',
+            avatar: '👦',
+            title: '戒備狀態',
+            text: [
+                "小明警惕地抱緊籃球，向後退了一步：「我……我等爸爸姐，你係邊個啊？」",
+                "孩子對突如其來的質問產生了戒備心。身為社工 Yanki，我需要換一種更加溫柔同理的方式。」"
+            ],
+            choices: [
+                { text: "遞上社工卡片與果汁卡，溫和表示：「我是 Yanki 姐姐，就在那邊的兒童中心，隨時可以過來玩桌遊喔。」", next: 'ming_empathy_win', empathyDelta: 0, trustDelta: 10 }
+            ]
+        },
+
+        'ming_empathy_win': {
+            location: '📍 彩虹邨七彩籃球場',
+            bg: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '成功建構信任關係',
+            text: [
+                "小明露出久違燦爛的笑容：「Yanki 姐姐，我聽日放學可以去中心玩樂高嗎？」",
+                "我隨後聯絡上小明的媽媽，獲得家長同意為小明申請『課後學習及支援計劃』，化解了他的孤獨感。",
+                "第一個個案成功順利跟進！"
+            ],
+            choices: [
+                { text: "繼續在彩虹邨巡邏，前往丹鳳樓（關注學業壓力個案）", next: 'danfung_case', empathyDelta: 5, trustDelta: 10 }
+            ]
+        },
+
+        'ming_resource_referral': {
+            location: '📍 彩虹邨七彩籃球場',
+            bg: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '資源成功連結',
+            text: [
+                "小明點了點頭，表示想參與中心的繪畫班與桌遊課。",
+                "我成功與小明建立初步信任，並留下聯絡方式，為他提供了安全溫暖的課後環境。"
+            ],
+            choices: [
+                { text: "繼續巡邏彩虹邨，前往丹鳳樓", next: 'danfung_case', empathyDelta: 5, trustDelta: 10 }
+            ]
+        },
+
+        // Chapter 2 Case B: Dan Fung House (Exam stress & parenting conflict)
+        'danfung_case': {
+            location: '📍 彩虹邨丹鳳樓走廊',
+            bg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=800&auto=format&fit=crop',
+            speaker: '陳太太與婷婷 (小五)',
+            avatar: '👩‍👧',
+            title: '親子衝突對峙中',
+            text: [
+                "走到丹鳳樓低層走廊，傳來陣陣嚴厲的責備聲：『呈分試考成咁，以後點升中學啊！每日淨係識畫畫！』",
+                "小五學童『婷婷』低頭默默哭泣，手中緊緊抱著一本畫冊，母親陳太太眼神充滿焦慮與疲憊。"
+            ],
+            choices: [
+                { text: "【家庭同理調解】安撫家長焦慮：「陳太太，照顧三個小朋友好辛苦，你都好緊張婷婷的未來……」", next: 'parent_empathy_route', empathyDelta: 10, trustDelta: 15 },
+                { text: "【專注兒童情緒】關心婷婷：「婷婷，可以讓 Yanki 姐姐看看你的畫冊嗎？」", next: 'child_art_route', empathyDelta: 5, trustDelta: 20 }
+            ]
+        },
+
+        'parent_empathy_route': {
+            location: '📍 彩虹邨丹鳳樓走廊',
+            bg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=800&auto=format&fit=crop',
+            speaker: '陳太太',
+            avatar: '👩',
+            title: '情緒釋放中',
+            text: [
+                "陳太太長舒一口氣，眼眶泛紅：『Yanki 社工，我唔係想罵佢……但我同先生每日做嘢咁忙，好怕佢將來好似我哋咁辛苦……』",
+                "家長的嚴厲背後，往往是生活壓力的焦慮映射。"
+            ],
+            choices: [
+                { text: "【專業家庭輔導】邀請陳太太參與中心『正向管教家長工作坊』，同時安排婷婷參與免費功課輔導組。", next: 'danfung_win', empathyDelta: 15, trustDelta: 25 }
+            ]
+        },
+
+        'child_art_route': {
+            location: '📍 彩虹邨丹鳳樓走廊',
+            bg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=800&auto=format&fit=crop',
+            speaker: '婷婷 (小五)',
+            avatar: '👧',
+            title: '展露才華',
+            text: [
+                "婷婷擦乾眼淚，翻開畫冊——裡面全是彩虹邨優美的景色與她夢想中的彩虹公園。",
+                "我向陳太太展示婷婷驚人的藝術天賦與細膩心思，陳太太愣住了，眼神從憤怒轉為驚喜與愧疚。"
+            ],
+            choices: [
+                { text: "【肯定價值】建議陳太太鼓勵婷婷發展藝術特長，並協助報名社區兒童藝術比賽，建立自信。", next: 'danfung_win', empathyDelta: 15, trustDelta: 25 }
+            ]
+        },
+
+        'danfung_win': {
+            location: '📍 彩虹邨丹鳳樓',
+            bg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '親子關係緩和',
+            text: [
+                "陳太太牽起婷婷的手，向我連聲道謝。婷婷露出甜甜的笑容：『多謝 Yanki 姐姐！』",
+                "家庭溝通的橋樑順利架起，每個孩子的獨特性都值得被愛與看見。"
+            ],
+            choices: [
+                { text: "前往最後一個區域：紫薇樓公園（化解特殊學習需要 SEN 困境）", next: 'sen_case', empathyDelta: 10, trustDelta: 10 }
+            ]
+        },
+
+        // Chapter 3 Case C: Tsz Wei House Playground (SEN & Special Learning Needs)
+        'sen_case': {
+            location: '📍 紫薇樓兒童遊樂場',
+            bg: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=800&auto=format&fit=crop',
+            speaker: '軒仔 (小一 SEN 學童)',
+            avatar: '🧒',
+            title: '孤立無助狀態',
+            text: [
+                "傍晚時分，遊樂場滑梯旁，小一學生『軒仔』一個人坐在沙池裡拆弄著積木。其他小朋友不和他玩，說他『好奇怪、動作好慢』。",
+                "軒仔患有專注力不足及過動傾向 (ADHD)，在學校經常被誤解為不聽話。"
+            ],
+            choices: [
+                { text: "【感官遊戲介入】蹲下身與軒仔一起堆沙，用清晰具體的指令引導互動：「軒仔，我們一起用沙蓋一座彩虹城堡好不好？」", next: 'sen_play_therapy', empathyDelta: 10, trustDelta: 20 },
+                { text: "【跨機構個案轉介】評估軒仔需求，準備聯絡教育心理學家與特殊教育學習資源。", next: 'sen_referral_route', empathyDelta: 10, trustDelta: 15 }
+            ]
+        },
+
+        'sen_play_therapy': {
+            location: '📍 紫薇樓兒童遊樂場',
+            bg: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=800&auto=format&fit=crop',
+            speaker: '軒仔 (小一)',
+            avatar: '🧒',
+            title: '專注投入',
+            text: [
+                "軒仔眼神亮起來，在結構清晰的遊戲引導下，展現出驚人的空間想像力，與我一起建了一座精美的沙堡！",
+                "鄰近的小朋友被沙堡吸引，紛紛圍過來：「哇！軒仔好厲害啊！」",
+                "我藉此向其他小朋友傳遞包容理念，讓軒仔體會到了被接納的喜悅。"
+            ],
+            choices: [
+                { text: "完成今天的彩虹邨兒童巡邏任務，查看工作總結！", next: 'final_summary', empathyDelta: 15, trustDelta: 25 }
+            ]
+        },
+
+        'sen_referral_route': {
+            location: '📍 紫薇樓兒童遊樂場',
+            bg: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '專業支援啟動',
+            text: [
+                "我隨後聯絡了軒仔的學校社工與家長，為軒仔安排了情緒調節訓練與 SEN 課後小組支援服務，確保他獲得全方位的成長護航。"
+            ],
+            choices: [
+                { text: "完成今天的彩虹邨兒童巡邏任務，查看工作總結！", next: 'final_summary', empathyDelta: 10, trustDelta: 20 }
+            ]
+        },
+
+        // Game Victory & Summary Screen
+        'final_summary': {
+            location: '📍 彩虹邨兒童及青少年中心',
+            bg: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=800&auto=format&fit=crop',
+            speaker: '社工 Yanki',
+            avatar: '👧‍⚕️',
+            title: '彩虹下的童心守護者',
+            text: [
+                "夕陽西下，彩虹邨的七彩外牆被染上一層溫暖的金黃。",
+                "今天，我成功關懷了孤獨的小明、緩解了婷婷母女的學業焦慮，並為 SEN 的軒仔找回了自信與笑臉。",
+                "社工的工作並不總是能奇蹟般改變一切，但每一次溫柔的傾聽、每一次專業的陪伴，都能在孩子的心中種下一顆希望的種子。",
+                "『彩虹總在風雨後』——我是 Yanki，明天我會繼續守護彩虹邨孩子們的笑容！"
+            ],
+            choices: [
+                { text: "🌟 重新開啟 Yanki 的社工冒險之旅", next: 'restart', empathyDelta: 0, trustDelta: 0 }
+            ]
+        }
+    };
+
+    function renderScene(sceneId) {
+        if (sceneId === 'restart') {
+            gameState.empathy = 100;
+            gameState.trust = 0;
+            sceneId = 'start';
+        }
+
+        gameState.currentSceneId = sceneId;
+        const node = STORY_NODES[sceneId];
+        if (!node) return;
+
+        // UI Updates
+        document.getElementById('current-location').innerText = node.location;
+        document.getElementById('speaker-avatar').innerText = node.avatar;
+        document.getElementById('speaker-name').innerText = node.speaker;
+        document.getElementById('speaker-title').innerText = node.title;
+
+        // Scene Background update
+        const bgEl = document.getElementById('scene-bg');
+        bgEl.style.backgroundImage = `url('${node.bg}')`;
+
+        // Narrative text rendering
+        const narrativeContainer = document.getElementById('narrative-text');
+        narrativeContainer.innerHTML = node.text.map(p => `<p class="leading-relaxed bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60">${p}</p>`).join('');
+
+        // Choices rendering
+        const choicesContainer = document.getElementById('choices-container');
+        choicesContainer.innerHTML = '';
+
+        node.choices.forEach((choice, index) => {
+            const btn = document.createElement('button');
+            btn.className = "choice-btn w-full p-3.5 bg-slate-900 hover:bg-slate-800 active:bg-pink-950/40 text-left text-xs sm:text-sm font-semibold text-slate-100 rounded-2xl border border-slate-700/80 hover:border-pink-500/50 flex items-center justify-between gap-2 shadow-md";
+            
+            btn.innerHTML = `
+                <span class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-pink-500/20 text-pink-300 text-xs flex items-center justify-center font-bold border border-pink-500/30 shrink-0">${index + 1}</span>
+                    <span>${choice.text}</span>
+                </span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-500 shrink-0"></i>
+            `;
+
+            btn.onclick = () => {
+                sound.playChoiceSFX();
+                
+                // Update Stats
+                gameState.empathy = Math.min(100, Math.max(0, gameState.empathy + (choice.empathyDelta || 0)));
+                gameState.trust += (choice.trustDelta || 0);
+
+                document.getElementById('stat-empathy').innerText = gameState.empathy;
+                document.getElementById('stat-trust').innerText = gameState.trust;
+
+                if (choice.trustDelta > 0) {
+                    sound.playPositiveSFX();
+                }
+
+                renderScene(choice.next);
+            };
+
+            choicesContainer.appendChild(btn);
+        });
+    }
+
+    window.onload = function() {
+        const modal = document.getElementById('modal-screen');
+        const btnStart = document.getElementById('btn-start-game');
+
+        btnStart.onclick = () => {
+            sound.init();
+            sound.playCareSFX();
+            modal.classList.add('hidden');
+            renderScene('start');
+        };
+    };
+    </script>
+</body>
+</html>
