@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>彩虹邨社工日誌：Yanki 的童心陪伴 (完整版)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        choiRed: '#FF6B6B',
+                        choiOrange: '#FFA06D',
+                        choiYellow: '#FFE66D',
+                        choiGreen: '#4ECDC4',
+                        choiBlue: '#45B7D1',
+                        choiPurple: '#96CEB4',
+                        choiPink: '#FF9FF3',
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #0d9488;
+            border-radius: 4px;
+        }
+
+        /* Choice Animations */
+        .choice-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .choice-btn:active {
+            transform: scale(0.98);
+        }
+
+        .pulse-border {
+            animation: pulseBorder 2s infinite;
+        }
+        @keyframes pulseBorder {
+            0%, 100% { border-color: rgba(244, 63, 94, 0.8); }
+            50% { border-color: rgba(251, 146, 60, 0.8); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-4 bg-slate-950">
+
+    <!-- App Container -->
+    <div id="game-app" class="w-full max-w-md h-screen md:h-[844px] bg-slate-900 flex flex-col justify-between relative overflow-hidden md:rounded-3xl border-0 md:border-8 border-slate-800 shadow-2xl">
+
+        <!-- Top RSW Status Header -->
+        <header class="bg-slate-800/95 border-b border-slate-700 px-3.5 py-2.5 z-20 flex justify-between items-center text-xs shadow-md">
+            <!-- Social Worker Info -->
+            <div class="flex items-center space-x-2">
+                <div class="relative">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 border-2 border-white flex items-center justify-center font-black text-white shadow text-sm">
+                        Y
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 bg-amber-500 text-[8px] font-bold px-1 rounded-full text-slate-950 border border-slate-900">RSW</span>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-1">
+                        <h1 class="font-bold text-slate-100 leading-tight">Yanki</h1>
+                        <span class="text-[9px] text-teal-300 bg-teal-950/80 px-1.5 py-0.5 rounded border border-teal-500/30">學校社工</span>
+                    </div>
+                    <p id="current-location" class="text-[10px] text-amber-300 font-medium mt-0.5">
+                        <i class="fa-solid fa-location-dot mr-1"></i>彩虹邨 聖本德小學
+                    </p>
+                </div>
+            </div>
+
+            <!-- Game Indicators -->
+            <div class="flex items-center space-x-1.5">
+                <!-- Energy -->
+                <div class="bg-slate-900/90 px-2 py-1 rounded-xl border border-amber-500/40 flex flex-col items-center min-w-[46px]">
+                    <span class="text-[8px] text-slate-400 flex items-center"><i class="fa-solid fa-bolt text-amber-400 mr-0.5"></i>能量</span>
+                    <span id="stat-energy" class="font-bold text-amber-300 text-[11px]">100</span>
+                </div>
+                <!-- Trust -->
+                <div class="bg-slate-900/90 px-2 py-1 rounded-xl border border-rose-500/40 flex flex-col items-center min-w-[46px]">
+                    <span class="text-[8px] text-slate-400 flex items-center"><i class="fa-solid fa-heart text-rose-400 mr-0.5"></i>信任</span>
+                    <span id="stat-trust" class="font-bold text-rose-300 text-[11px]">35%</span>
+                </div>
+                <!-- Clues/Notebook -->
+                <button onclick="toggleNotebook()" class="w-8 h-8 bg-teal-600/30 hover:bg-teal-600/50 border border-teal-500/50 rounded-xl flex items-center justify-center text-teal-200 transition relative">
+                    <i class="fa-solid fa-book-bookmark text-xs"></i>
+                    <span id="notebook-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full hidden"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Narrative View -->
+        <main class="flex-1 bg-slate-950/90 overflow-y-auto custom-scroll p-3.5 flex flex-col space-y-3 relative">
+            
+            <!-- Chapter & Scene Header Card -->
+            <div id="scene-card" class="bg-slate-800/90 border border-slate-700 rounded-2xl p-3 shadow-lg flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <span id="scene-icon" class="text-2xl bg-slate-900 p-2 rounded-xl border border-slate-700">🏫</span>
+                    <div>
+                        <span id="scene-chapter" class="text-[9px] font-bold tracking-wider text-teal-400 uppercase">CHAPTER 1 • 08:30 AM</span>
+                        <h2 id="scene-title" class="text-xs font-bold text-slate-100">清晨的求助</h2>
+                    </div>
+                </div>
+                <div id="stress-badge" class="px-2 py-0.5 bg-rose-950/80 border border-rose-500/60 rounded-lg text-[9px] text-rose-300 font-medium hidden flex items-center space-x-1">
+                    <i class="fa-solid fa-triangle-exclamation animate-pulse text-rose-400"></i>
+                    <span>危機介入</span>
+                </div>
+            </div>
+
+            <!-- Main Narrative Text Container -->
+            <div id="story-container" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3 flex-1 flex flex-col justify-between">
+                
+                <!-- Dialogue / Narrative Text -->
+                <div id="narrative-text" class="text-xs text-slate-200 leading-relaxed space-y-2.5">
+                    <!-- Dynamic Text Injected by JS -->
+                </div>
+
+                <!-- Professional Tip / Reflection Box -->
+                <div id="social-worker-tip" class="bg-teal-950/60 border-l-4 border-teal-400 p-2.5 rounded-r-xl text-[10px] text-teal-200 flex items-start space-x-2 hidden">
+                    <i class="fa-solid fa-lightbulb text-teal-400 text-sm mt-0.5 shrink-0"></i>
+                    <div id="tip-text" class="leading-relaxed">Yanki 的社工思考...</div>
+                </div>
+            </div>
+
+            <!-- Dynamic Interactive Options Box -->
+            <div id="options-container" class="space-y-2 pt-1">
+                <!-- Buttons Injected Dynamically -->
+            </div>
+
+        </main>
+
+        <!-- RSW Case Files Modal -->
+        <div id="notebook-modal" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md z-50 p-4 hidden flex flex-col transition-all">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 flex-1 overflow-y-auto custom-scroll space-y-3 text-xs">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2.5">
+                    <div class="flex items-center space-x-2 text-teal-400 font-bold text-xs">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>Yanki 的社工跟進日誌 (RSW #38192)</span>
+                    </div>
+                    <button onclick="toggleNotebook()" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Case File Profile -->
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700 space-y-1.5">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-amber-400 text-xs flex items-center">
+                            <i class="fa-solid fa-user-gear mr-1.5"></i>個案簡介：張小明 (仔仔)
+                        </h3>
+                        <span class="text-[9px] bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/40">重點關注學童</span>
+                    </div>
+                    <div class="text-[10px] text-slate-300 leading-relaxed space-y-1">
+                        <p>• <strong>基本資料：</strong>9歲，聖本德小學小四B班學生。</p>
+                        <p>• <strong>居住地點：</strong>彩虹邨 紫薇樓中層單位。</p>
+                        <p>• <strong>家庭背景：</strong>單親家庭（媽媽任職兩份兼職），哥哥張阿傑（15歲）近期停學。</p>
+                        <p>• <strong>主要症狀：</strong>情緒起伏大、課堂瞌睡、手腕不明瘀傷、對「吸煙/甜味煙彈」有警覺感。</p>
+                    </div>
+                </div>
+
+                <!-- Collected Clues -->
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700 space-y-1.5">
+                    <h3 class="font-bold text-teal-400 text-xs flex items-center">
+                        <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i>已收集到的個案線索
+                    </h3>
+                    <div id="clues-list" class="space-y-1 text-[10px] text-slate-300">
+                        <p class="text-slate-500 italic">暫未收集到重要線索，繼續推進劇情吧...</p>
+                    </div>
+                </div>
+
+                <!-- Social Work Toolbox -->
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700 space-y-1.5">
+                    <h3 class="font-bold text-indigo-400 text-xs flex items-center">
+                        <i class="fa-solid fa-toolbox mr-1.5"></i>Yanki 的到校/社區介入工具箱
+                    </h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                        <div class="bg-slate-900/80 p-2 rounded-lg border border-teal-500/30 flex items-center space-x-1.5">
+                            <span class="text-sm">🃏</span>
+                            <div>
+                                <div class="font-bold text-slate-200">OH 卡與情緒卡</div>
+                                <div class="text-[8px] text-slate-400">投射式兒童溝通</div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-2 rounded-lg border border-amber-500/30 flex items-center space-x-1.5">
+                            <span class="text-sm">🚬</span>
+                            <div>
+                                <div class="font-bold text-slate-200">防毒/太空油圖解</div>
+                                <div class="text-[8px] text-slate-400">新型態偽裝毒品宣導</div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-2 rounded-lg border border-rose-500/30 flex items-center space-x-1.5">
+                            <span class="text-sm">📞</span>
+                            <div>
+                                <div class="font-bold text-slate-200">外展隊及IFSC</div>
+                                <div class="text-[8px] text-slate-400">跨專業社區轉介網絡</div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-2 rounded-lg border border-purple-500/30 flex items-center space-x-1.5">
+                            <span class="text-sm">🤝</span>
+                            <div>
+                                <div class="font-bold text-slate-200">案主自決與保密原則</div>
+                                <div class="text-[8px] text-slate-400">社工專業倫理守則</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="toggleNotebook()" class="w-full py-2 bg-teal-600 hover:bg-teal-500 font-bold text-white rounded-xl shadow text-xs transition">
+                    返回個案現場
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Game State Variables
+        const gameState = {
+            energy: 100,
+            trust: 35,
+            clues: [],
+            chapter: 1,
+            history: [],
+            currentScene: 'ch1_start'
+        };
+
+        // Helper: Add Clue
+        function addClue(title, detail) {
+            if (!gameState.clues.some(c => c.title === title)) {
+                gameState.clues.push({ title, detail });
+                const badge = document.getElementById('notebook-badge');
+                if (badge) badge.classList.remove('hidden');
+            }
+        }
+
+        // =========================================================
+        // FULL EXTENDED SCRIPT (6 CHAPTERS - APPROX 1 HOUR GAMEPLAY)
+        // =========================================================
+        const SCENES = {
+            // ---------------------------------------------------------
+            // CHAPTER 1: 清晨的求助與校園風暴
+            // ---------------------------------------------------------
+            'ch1_start': {
+                location: '彩虹邨 聖本德小學 輔導室',
+                icon: '🏫',
+                chapter: 'CHAPTER 1 • 08:30 AM',
+                title: '清晨的求助',
+                stress: false,
+                text: `
+                    <p class="font-medium text-amber-300">「Yanki 社工，你可算到了！」</p>
+                    <p>聖本德小學的李主任神色凝重地走進輔導室。窗外彩虹邨著名的彩色外牆在晨光下顯得格外亮麗，但輔導室內的氣氛卻十分沉重。</p>
+                    <p>「小四 B 班的張小明（仔仔），剛才在早會時無緣無故對同學發脾氣摔書包。而且……導師注意到他近兩週上課總是瞌睡，剛才拉開袖子時，手臂上有明顯的瘀傷。」</p>
+                    <p>今天你原定要為小四學生進行第一節<strong class="text-teal-300">「情緒管理與防毒防誘惑教育」</strong>到校講座。你決定：</p>
+                `,
+                tip: '社工專業考量：第一時間評估兒童身體安全（是否有虐待或暴力風險），同時兼顧不破壞與學童的初步信任。',
+                options: [
+                    {
+                        text: '1. 先按原計劃進行講座，在課堂上透過「情緒卡片」活動自然觀察小明。',
+                        nextScene: 'ch1_workshop'
+                    },
+                    {
+                        text: '2. 請李主任安排，在講座前先帶小明到輔導室進行 1 對 1 關懷。',
+                        nextScene: 'ch1_direct_counsel'
+                    },
+                    {
+                        text: '3. 認為涉及兒童暴力，立即要求校方啟動緊急通報程序。',
+                        nextScene: 'ch1_escalate'
+                    }
+                ]
+            },
+
+            'ch1_workshop': {
+                location: '聖本德小學 小四B班課室',
+                icon: '🎨',
+                chapter: 'CHAPTER 1 • 09:15 AM',
+                title: '課室內的情緒講座',
+                stress: false,
+                text: `
+                    <p>你帶著互動道具與情緒卡片走進小四B班。孩子們紛紛發出歡呼，唯獨坐在後排角落的小明趴在桌上，眼神閃爍，刻意用長袖遮住手臂。</p>
+                    <p>你開始講授<strong class="text-pink-300">「情緒怪獸與自我保護」</strong>。你介紹了「喜怒哀懼」四種基本情緒，並讓同學們分享近期的心情報告。</p>
+                    <p>小明低著頭，在紙上畫了一隻被黑色線條密密麻麻圈住的小狗。</p>
+                `,
+                tip: '投射藝術活動能有效降低兒童的防衛心理，幫助他們表達無法言語的焦慮。',
+                options: [
+                    {
+                        text: 'A. 走近小明身邊，以輕柔聲音說：「這隻小狗好像在找安全的地方，你想為牠加一個出口嗎？」',
+                        trustChange: 10,
+                        energyChange: -5,
+                        clue: { title: '小狗的塗鴉', detail: '小明在課堂繪畫活動中畫出被鐵圈包圍的小狗，展現內心極度缺乏安全感。' },
+                        nextScene: 'ch2_oh_cards'
+                    },
+                    {
+                        text: 'B. 站在講台上向全班發問：「大家看，當我們感到不安時，可以怎麼尋求幫助？」',
+                        trustChange: 0,
+                        energyChange: -5,
+                        nextScene: 'ch2_general_class'
+                    },
+                    {
+                        text: 'C. 直接走過去當眾指著塗鴉：「小明，你畫得這麼黑，是不是在家裡被人欺負了？」',
+                        trustChange: -10,
+                        energyChange: -5,
+                        nextScene: 'ch1_ming_defensive'
+                    }
+                ]
+            },
+
+            'ch1_direct_counsel': {
+                location: '輔導室',
+                icon: '🛋️',
+                chapter: 'CHAPTER 1 • 08:50 AM',
+                title: '安靜角落的對話',
+                stress: false,
+                text: `
+                    <p>小明被帶到輔導室，雙手緊緊抱著書包，腳尖不停踢著桌腳，顯得極度戒備與焦慮。</p>
+                    <p>「Yanki 姐姐……我沒有打人，是他們先笑我身上有怪味的……」他小聲嘟囔，眼睛不敢看你。</p>
+                    <p>你為他倒了一杯溫水，遞上一包朱古力餅乾，營造無壓力的環境。</p>
+                `,
+                tip: '建立安全空間（Safe Space）是兒童輔導的首要條件，切忌像審訊般逼問事故細節。',
+                options: [
+                    {
+                        text: 'A. 不急著談打架與瘀傷，先拿出「情緒卡片」邀請他一起玩牌卡連線遊戲。',
+                        trustChange: 15,
+                        energyChange: -5,
+                        clue: { title: '奇怪的氣味', detail: '小明提到同學笑他身上有怪味，懷疑與二手煙或特殊煙霧有關。' },
+                        nextScene: 'ch2_oh_cards'
+                    },
+                    {
+                        text: 'B. 直奔主題：「仔仔，主任說你手上有瘀傷，拉開袖子讓 Yanki 姐姐看看。」',
+                        trustChange: -10,
+                        energyChange: -5,
+                        nextScene: 'ch1_ming_defensive'
+                    }
+                ]
+            },
+
+            'ch1_escalate': {
+                location: '校長室',
+                icon: '⚠️',
+                chapter: 'CHAPTER 1 • 危機評估',
+                title: '過早的防衛崩潰',
+                stress: true,
+                text: `
+                    <p>由於手續尚未確立且未與小明建立基本信任，突如其來的嚴肅詢問與校方關切讓小明嚇得大哭。</p>
+                    <p>「你們都騙人！你們要把我送去保良局！」小明情緒徹底崩潰，推開輔導室大門，衝出校門往彩虹邨方向跑去！</p>
+                `,
+                tip: '社工倫理提醒：若無即時生命危險，過早採取硬性舉報或集體審問易破壞案主信任，增加逃跑風險。',
+                options: [
+                    {
+                        text: '【應變處置】立刻追出校門，沿彩虹邨紫薇樓與丹鳳樓周邊搜尋小明。',
+                        trustChange: -15,
+                        energyChange: -15,
+                        nextScene: 'ch3_search_estate'
+                    }
+                ]
+            },
+
+            'ch1_ming_defensive': {
+                location: '課室角落',
+                icon: '🛡️',
+                chapter: 'CHAPTER 1 • 阻力處置',
+                title: '閉鎖的心扉',
+                stress: true,
+                text: `
+                    <p>小明立刻將塗鴉撕成碎片，把頭深深埋進手臂裡，不再回答任何問題。</p>
+                    <p>週圍同學開始竊竊私語，氣氛變得極度尷尬。</p>
+                `,
+                tip: '專業應變：在公開場合給予學童尊嚴與退路，切勿強行對質。',
+                options: [
+                    {
+                        text: '溫和地為他遞上小卡片：「沒關係，每個人都有想自己待著的時候。這張卡片留給你，想找人傾訴時隨時來輔導室。」',
+                        trustChange: 5,
+                        energyChange: -5,
+                        nextScene: 'ch2_post_class'
+                    }
+                ]
+            },
+
+            // ---------------------------------------------------------
+            // CHAPTER 2: 課室內的情緒密碼與新型毒品威脅
+            // ---------------------------------------------------------
+            'ch2_oh_cards': {
+                location: '輔導室 / 課室互動區',
+                icon: '🃏',
+                chapter: 'CHAPTER 2 • 10:30 AM',
+                title: 'OH卡與情緒解碼',
+                stress: false,
+                text: `
+                    <p>你拿出社工常用的 <strong class="text-teal-300">OH 卡 (Oh Cards) 與情緒表情卡</strong>，鋪在桌面上。</p>
+                    <p>小明指著一張「被鎖在黑屋裡」的圖卡，又指了一張寫著「害怕」與「憤怒」字樣的卡片。</p>
+                    <p>「Yanki 姐姐……哥哥最近帶了一些怪怪的人回家。他們在房間裡吸一種水果味道的煙（疑似『太空油』或新興毒品煙彈），還警告我不能跟媽媽說……」</p>
+                    <p>小明壓低聲音說道：「昨晚哥哥跟他們吵架，我想去拉哥哥，就被推倒撞到了床角……」</p>
+                `,
+                tip: '關鍵線索解鎖：小明手腕瘀傷並非家暴，而是涉及哥哥（阿傑）涉入社區不良同輩及新興危害物質（太空油/電子煙）。',
+                options: [
+                    {
+                        text: '1. （同理心與保護）「仔仔，這不是你的錯。你保護哥哥很勇敢，但這種煙非常危險，姐姐會幫你和哥哥。」',
+                        trustChange: 15,
+                        energyChange: -5,
+                        clue: { title: '太空油與不良同輩', detail: '哥哥阿傑在彩虹邨家中與不良青年聚集吸食水果味煙彈（太空油），小明因勸阻而受傷。' },
+                        nextScene: 'ch2_anti_drug_quiz'
+                    },
+                    {
+                        text: '2. （法律與舉報導向）「這是嚴重的違法行為！你哥哥那些朋友叫什麼名字？住彩虹邨哪一座？」',
+                        trustChange: -5,
+                        energyChange: -5,
+                        nextScene: 'ch2_anti_drug_quiz'
+                    }
+                ]
+            },
+
+            'ch2_general_class': {
+                location: '聖本德小學 操場',
+                icon: '⚽',
+                chapter: 'CHAPTER 2 • 11:00 AM',
+                title: '小組活動的轉機',
+                stress: false,
+                text: `
+                    <p>大堂講座結束後，你在小組遊戲時間特別觀察小明。小明獨自坐在操場階梯上，玩著一個看起來像是水果形狀的塑膠外殼小吊飾。</p>
+                    <p>你憑專業敏感度認出，這極可能是近年在青少年前端流傳、偽裝成玩具或電子煙彈的<strong class="text-rose-400">「新型態太空油/毒品包裝」</strong>！</p>
+                `,
+                tip: '新型毒品（如依托咪酯/太空油）常偽裝成普通電子煙油或糖果果汁，對青少年具極高誘惑力。',
+                options: [
+                    {
+                        text: 'A. 走過去坐在他身邊，拿出一份新型禁毒圖鑑資料：「這個小吊飾好特別，姐姐剛好在準備這個宣導教材，可以跟我聊聊嗎？」',
+                        trustChange: 10,
+                        energyChange: -5,
+                        clue: { title: '偽裝毒品外殼', detail: '小明隨身攜帶疑似太空油煙彈的塑膠盒，顯示危險物質已滲透至兒童生活圈。' },
+                        nextScene: 'ch2_anti_drug_quiz'
+                    },
+                    {
+                        text: 'B. 立刻沒收該物品：「小明！這個不能玩，這是危險違禁品！」',
+                        trustChange: -15,
+                        energyChange: -5,
+                        nextScene: 'ch2_post_class'
+                    }
+                ]
+            },
+
+            'ch2_anti_drug_quiz': {
+                location: '輔導室 專業評估',
+                icon: '🧪',
+                chapter: 'CHAPTER 2 • 11:45 AM',
+                title: '識破毒品偽裝',
+                stress: false,
+                text: `
+                    <p>在輔導室中，你打開隨身工具箱，展示幾種新型偽裝毒品的圖示（跳跳糖、太空油煙彈、彩虹軟糖）。</p>
+                    <p>「小明，你看過這些東西嗎？如果有人說吸了這個能『心情變好』或『賺快錢』，千萬不能相信。」</p>
+                    <p>小明點了點頭：「哥哥說……那些大兄哥答應他，只要幫忙拿幾次貨，就能買新的 iPhone 和遊戲機給我們……」</p>
+                `,
+                tip: '青少年常因經濟誘惑（毒販利用其無知）而被利用作為運毒工具，社工需同時處理情緒與危機評估。',
+                options: [
+                    {
+                        text: '1. 制定下午的彩虹邨家訪計劃，並準備轉介青少年外展社工隊（YOT）。',
+                        trustChange: 10,
+                        energyChange: -10,
+                        nextScene: 'ch3_choi_hung_outreach'
+                    },
+                    {
+                        text: '2. 決定立刻通知學校校長及警民關係組，直接進行執法介入。',
+                        trustChange: -10,
+                        energyChange: -10,
+                        nextScene: 'ch3_police_escalation'
+                    }
+                ]
+            },
+
+            'ch2_post_class': {
+                location: '聖本德小學 走廊',
+                icon: '🚶',
+                chapter: 'CHAPTER 2 • 午間休息',
+                title: '午間的追蹤',
+                stress: false,
+                text: `
+                    <p>午膳時間，你向小明班主任李老師瞭解家庭背景。</p>
+                    <p>「小明媽媽在茶餐廳做兼職，晚上還做大廈清潔，根本沒時間管孩子。哥哥阿傑之前在九龍城一所中學就讀，近月輟學後常在彩虹邨商場與籃球場附近流連……」</p>
+                `,
+                tip: '跨系統資料蒐集：結合校方資訊與社區背景，構築完整的家庭系統圖像。',
+                options: [
+                    {
+                        text: '趁午休時間先到彩虹邨紫薇樓附近進行社區探訪與環境觀察。',
+                        energyChange: -10,
+                        nextScene: 'ch3_choi_hung_outreach'
+                    }
+                ]
+            },
+
+            // ---------------------------------------------------------
+            // CHAPTER 3: 彩虹邨的暗流與社區外展
+            // ---------------------------------------------------------
+            'ch3_choi_hung_outreach': {
+                location: '彩虹邨 丹鳳樓及紫薇樓天井',
+                icon: '🏢',
+                chapter: 'CHAPTER 3 • 02:00 PM',
+                title: '彩虹邨的暗流',
+                stress: false,
+                text: `
+                    <p>午後的彩虹邨熱鬧非凡，標誌性的彩色外牆吸引了不少遊客拍照。但走進紫薇樓的舊式天井與長廊，暗處卻隱藏著另一面。</p>
+                    <p>你在樓梯轉角處看到兩名身穿黑衫、神情流氣的青年正低聲交談，旁邊站著一名眼神迷惘的少年——正是小明的哥哥<strong class="text-amber-300">張阿傑（15歲）</strong>。</p>
+                    <p>黑衫青年遞給阿傑一個小背包，並拍了拍他的肩膀說：「今晚紫薇樓低層，交完貨就有三千蚊。」</p>
+                `,
+                tip: '社區外展危機：面對現場非法交易疑慮，社工個人安全第一，切勿隻身硬碰硬。',
+                options: [
+                    {
+                        text: 'A. 保持距離拍攝存證，並立刻聯繫熟識的「青協/外展青少年社工隊」隊員前來支援。',
+                        trustChange: 10,
+                        energyChange: -10,
+                        clue: { title: '阿傑涉入非法運毒', detail: '在紫薇樓親眼目睹阿傑接受不良青年交托的小背包，涉嫌金錢誘惑運毒。' },
+                        nextScene: 'ch3_outreach_team'
+                    },
+                    {
+                        text: 'B. 直接走上前喝止：「阿傑！你在做什麼？你弟弟小明在學校很擔心你！」',
+                        trustChange: -10,
+                        energyChange: -15,
+                        nextScene: 'ch3_confrontation'
+                    },
+                    {
+                        text: 'C. 暫不打草驚蛇，先前往小明家進行預定家訪，了解媽媽的態度。',
+                        trustChange: 5,
+                        energyChange: -10,
+                        nextScene: 'ch4_home_visit'
+                    }
+                ]
+            },
+
+            'ch3_search_estate': {
+                location: '彩虹邨 停車場天台籃球場',
+                icon: '🏀',
+                chapter: 'CHAPTER 3 • 緊急搜尋',
+                title: '雨中的彩虹邨',
+                stress: true,
+                text: `
+                    <p>你在彩虹邨的長廊與公園焦急尋找，終於在天台彩虹籃球場的涼亭角落找到了蜷縮成一團的小明。</p>
+                    <p>此時天空下起了細雨，彩虹顏色的地面一片濕滑。小明渾身濕透，雙手抱膝，眼中充滿恐懼與不信任。</p>
+                `,
+                tip: '危機修復：此時任何說教都是有害的，先滿足學童的生理安全需求（溫暖/乾爽/尊重）。',
+                options: [
+                    {
+                        text: '遞上隨身攜帶的外套與乾紙巾，默默陪他坐在涼亭下，一句話都不逼問。',
+                        trustChange: 20,
+                        energyChange: -15,
+                        nextScene: 'ch3_rain_talk'
+                    }
+                ]
+            },
+
+            'ch3_rain_talk': {
+                location: '彩虹邨 涼亭',
+                icon: '☔',
+                chapter: 'CHAPTER 3 • 修復信任',
+                title: '涼亭下的承諾',
+                stress: false,
+                text: `
+                    <p>經過二十分鐘的沉默，小明接過了紙巾擦乾頭髮，心情逐漸平復。</p>
+                    <p>「Yanki 姐姐……我不是故意要跑的。我只是怕警察把我哥哥抓走，媽媽會崩潰……」小明哽咽道。</p>
+                    <p>你告訴他社工的職責是協助家庭渡過難關，而非單純懲罰。小明終於願意帶你前往他家。</p>
+                `,
+                tip: '成功修復危機！將危機轉化為深入家庭介入的契機。',
+                options: [
+                    {
+                        text: '陪同小明一起步行回紫薇樓家中進行家訪。',
+                        nextScene: 'ch4_home_visit'
+                    }
+                ]
+            },
+
+            'ch3_outreach_team': {
+                location: '彩虹邨 熟食亭茶餐廳',
+                icon: '☕',
+                chapter: 'CHAPTER 3 • 跨專業會商',
+                title: '外展隊的支援',
+                stress: false,
+                text: `
+                    <p>十幾分鐘後，香港青少年服務處的外展社工 Ah Kiu（阿嬌）趕到彩虹邨茶餐廳與你會合。</p>
+                    <p>「Yanki，你提供的資訊很關鍵！那個黑衫青年是我們跟進很久的社區壞份子，常利用屋邨輟學少年當『跑腿』。」阿嬌說道。</p>
+                    <p>你們決定分工：Yanki 負責進行家庭訪談並保護小明，外展隊則在屋邨周邊建立對阿傑的接觸網絡。</p>
+                `,
+                tip: '跨專業協作（Multi-disciplinary Approach）：活用社會資源網絡能大幅提升介入成效。',
+                options: [
+                    {
+                        text: '前往紫薇樓小明家進行重點家訪。',
+                        trustChange: 10,
+                        energyChange: -5,
+                        nextScene: 'ch4_home_visit'
+                    }
+                ]
+            },
+
+            'ch3_confrontation': {
+                location: '紫薇樓 巷弄',
+                icon: '💥',
+                chapter: 'CHAPTER 3 • 正面衝突',
+                title: '打草驚蛇',
+                stress: true,
+                text: `
+                    <p>黑衫青年見到有大人衝出來，立刻搶過阿傑身上的背包，狠狠推了阿傑一把：「操！有社工！走！」</p>
+                    <p>黑衫青年迅速逃遁，而阿傑則對你怒目而視：「你誰啊？！憑什麼多管閒事！你害我拿不到錢交租了！」阿傑轉身狂奔消失在長廊深處。</p>
+                `,
+                tip: '反思：直接衝突破壞了對青少年的防衛機制，增加了後續接觸的難度。',
+                options: [
+                    {
+                        text: '收拾心情，先前往小明家評估家庭與媽媽的狀況。',
+                        trustChange: -5,
+                        energyChange: -10,
+                        nextScene: 'ch4_home_visit'
+                    }
+                ]
+            },
+
+            'ch3_police_escalation': {
+                location: '警民關係組 / 校長室',
+                icon: '🚔',
+                chapter: 'CHAPTER 3 • 法律程序',
+                title: '法律與專業的拉扯',
+                stress: true,
+                text: `
+                    <p>校方與警方迅速接獲通知，彩虹邨周邊增派了巡邏警力。然而，這引來了社區居民的圍觀，也讓小明家承受了巨大的社區標籤壓力。</p>
+                    <p>小明媽媽接獲電話後在茶餐廳當場暈倒被送往醫院。</p>
+                `,
+                tip: '社工倫理考量：法律通報與個案最佳利益之間需取得專業平衡，避免造成二次傷害。',
+                options: [
+                    {
+                        text: '趕往聯合醫院探望小明媽媽，並協助處理緊急照顧安排。',
+                        trustChange: -10,
+                        energyChange: -20,
+                        nextScene: 'ch4_hospital_visit'
+                    }
+                ]
+            },
+
+            // ---------------------------------------------------------
+            // CHAPTER 4: 紫薇樓的家訪與家庭衝突
+            // ---------------------------------------------------------
+            'ch4_home_visit': {
+                location: '彩虹邨 紫薇樓低層單位',
+                icon: '🏠',
+                chapter: 'CHAPTER 4 • 04:30 PM',
+                title: '紫薇樓的門縫',
+                stress: false,
+                text: `
+                    <p>你敲響了紫薇樓某單位的鐵閘。門內傳來咳嗽聲與電視機聲音，小明媽媽拖著疲憊的身軀打開門。</p>
+                    <p>狹窄的公屋單位內堆滿了雜物與折疊好的手工業材料。客廳牆上掛著小明獲得的小學獎狀，以及一家三口幾年前的合照。</p>
+                    <p>「Yanki 社工……是不是小明在學校又打架了？我真的不知道該怎麼教孩子了……」媽媽一邊擦眼淚一邊遞上熱水。</p>
+                `,
+                tip: '家庭系統理論：單親親職壓力、經濟匱乏與缺乏社區支援常是兒童情緒問題的深層根源。',
+                options: [
+                    {
+                        text: '1. （肯定與增能）「張太太，你一個人做兩份工撐起這個家非常不容易。我看到牆上的獎狀，小明其實很在乎你。」',
+                        trustChange: 15,
+                        energyChange: -10,
+                        clue: { title: '單親親職過載', detail: '媽媽每日工作超14小時，無暇照顧兩子，極度需要課後託管與經濟喘息支援。' },
+                        nextScene: 'ch4_mother_dialogue'
+                    },
+                    {
+                        text: '2. （問題導向）「張太太，你知道阿傑最近跟黑社會混在一起，還可能涉及販毒嗎？」',
+                        trustChange: -10,
+                        energyChange: -10,
+                        nextScene: 'ch4_mother_breakdown'
+                    }
+                ]
+            },
+
+            'ch4_mother_dialogue': {
+                location: '紫薇樓單位內',
+                icon: '☕',
+                chapter: 'CHAPTER 4 • 家訪進行中',
+                title: '母子之間的橋樑',
+                stress: false,
+                text: `
+                    <p>小明媽媽聽到你的肯定，積壓已久的眼淚終於潰堤。她傾訴著做兼職清潔的辛酸，以及對大兒子阿傑輟學的無奈與自責。</p>
+                    <p>「阿傑以前很乖的，自從他爸爸過世後，他總覺得自己該像個男人一樣賺錢……是我沒用……」</p>
+                    <p>你向媽媽介紹了彩虹邨社區中心的<strong class="text-teal-300">「免費兒童課後托管計劃」</strong>與<strong class="text-indigo-300">「家庭綜合服務中心 (IFSC) 支援服務」</strong>。</p>
+                `,
+                tip: '資源連結（Resource Mobilization）：提供實質解決方案能有效舒緩案主焦慮。',
+                options: [
+                    {
+                        text: 'A. 協助媽媽填寫課後託管申請表，並約定為阿傑安排「青年職業技能培訓」諮詢。',
+                        trustChange: 15,
+                        energyChange: -10,
+                        nextScene: 'ch5_roof_confrontation'
+                    },
+                    {
+                        text: 'B. 建議媽媽考慮將阿傑送往寄宿學校或嚴格管教機構。',
+                        trustChange: -5,
+                        energyChange: -10,
+                        nextScene: 'ch5_roof_confrontation'
+                    }
+                ]
+            },
+
+            'ch4_mother_breakdown': {
+                location: '紫薇樓單位內',
+                icon: '💔',
+                chapter: 'CHAPTER 4 • 家庭危機',
+                title: '崩潰的母親',
+                stress: true,
+                text: `
+                    <p>聽到阿傑涉毒的消息，媽媽臉色慘白，差點暈倒。小明嚇得抱住媽媽大哭：「Yanki 姐姐不要抓哥哥！不要叫警察！」</p>
+                    <p>此時，鐵閘突然被猛力推開，阿傑氣沖沖地站在門口：「你在跟我媽胡說八道什麼？！」</p>
+                `,
+                tip: '危機應變：迅速控制現場情緒，防止家庭成員間爆發言語或肢體暴力。',
+                options: [
+                    {
+                        text: '站到阿傑與媽媽之間，用溫和而堅定的口吻說：「阿傑，我們進房間單獨聊聊，好嗎？」',
+                        trustChange: 10,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_private'
+                    }
+                ]
+            },
+
+            'ch4_hospital_visit': {
+                location: '聯合醫院 內科病房',
+                icon: '🏥',
+                chapter: 'CHAPTER 4 • 探視與轉機',
+                title: '病房裡的溫暖',
+                stress: false,
+                text: `
+                    <p>在醫院病房裡，小明媽媽身體並無大礙，主要是長期過勞與急性焦慮引發的昏厥。</p>
+                    <p>阿傑偷偷躲在病房門口看著媽媽，眼神裡充滿自責與茫然。你走出去，在病房走廊截住了阿傑。</p>
+                `,
+                tip: '把握脆弱時刻（Teachable Moment）：在家人遭遇健康危機時，青少年往往最容易展現內心真實關懷。',
+                options: [
+                    {
+                        text: '「阿傑，媽媽真的很愛你們。你不需要靠危險的方法來證明自己長大了，社工姐姐可以幫你找正當的培訓與工作。」',
+                        trustChange: 15,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_private'
+                    }
+                ]
+            },
+
+            // ---------------------------------------------------------
+            // CHAPTER 5: 籃球場上的抉擇與危機化解
+            // ---------------------------------------------------------
+            'ch5_roof_confrontation': {
+                location: '彩虹邨 停車場天台籃球場',
+                icon: '🌅',
+                chapter: 'CHAPTER 5 • 06:15 PM',
+                title: '彩虹天台的對決',
+                stress: false,
+                text: `
+                    <p>黃昏時分，夕陽將彩虹邨天台籃球場染成一片金黃與粉紫。</p>
+                    <p>阿傑獨自坐在球場邊緣，狠狠地把手中的籃球砸向牆壁。不良青年的黑衫幫成員正在遠處商場地下等待他的回應。</p>
+                    <p>你帶著小明與外展社工 Ah Kiu 一起走上天台。</p>
+                `,
+                tip: '臨界點介入（Critical Point）：這是決定阿傑是否滑入犯罪深淵的關鍵時刻。',
+                options: [
+                    {
+                        text: '1. （情緒觸動）讓小明將今天在學校畫的「安全小狗」圖畫遞給哥哥：「哥哥，小明今天因為擔心你，在學校哭了很久。」',
+                        trustChange: 20,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_softens'
+                    },
+                    {
+                        text: '2. （專業評估與分析）向阿傑展示「太空油/毒品罪行」法律刑事責任責任卡，說明販毒在香港的嚴厲刑罰。',
+                        trustChange: 5,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_softens'
+                    },
+                    {
+                        text: '3. （威嚇告誡）警告阿傑：「警方已經在附近部署，你現在過去交貨就是自尋死路！」',
+                        trustChange: -15,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_flee'
+                    }
+                ]
+            },
+
+            'ch5_brother_private': {
+                location: '紫薇樓 樓梯間',
+                icon: '💬',
+                chapter: 'CHAPTER 5 • 深度對話',
+                title: '少年男子的自尊',
+                stress: false,
+                text: `
+                    <p>在昏暗的樓梯間裡，阿傑靠著牆壁，低下了頭。</p>
+                    <p>「我只是想買一部電腦給小明做功課，想幫媽媽分擔房租……那些人說幫忙拿貨很安全，一次給三千蚊……我不知道那是太空油毒品……」阿傑聲音沙啞。</p>
+                    <p>你拍了拍他的肩膀：「想承擔責任是好男人的表現，但選錯道路會毀了你和小明的未來。」</p>
+                `,
+                tip: '重塑認知（Reframing）：將青少年的叛逆動機重塑為「對家庭的關心」，再引導正確途徑。',
+                options: [
+                    {
+                        text: '拿出外展隊的「VTC 職業訓練局課程與青年就業試行計劃」簡章：「如果你願意，我們一起跟媽媽坦白，然後重新開始。」',
+                        trustChange: 20,
+                        energyChange: -10,
+                        nextScene: 'ch5_brother_softens'
+                    }
+                ]
+            },
+
+            'ch5_brother_softens': {
+                location: '彩虹籃球場',
+                icon: '🤝',
+                chapter: 'CHAPTER 5 • 轉機出現',
+                title: '破冰與重生',
+                stress: false,
+                text: `
+                    <p>阿傑看著弟弟小明的圖畫，眼眶泛紅。他用力把那個裝有違禁品的背包丟給了外展社工 Ah Kiu。</p>
+                    <p>「Yanki 姐姐……我不想坐牢，我想幫媽媽，我想繼續讀書……」阿傑終於抱著弟弟哭出聲來。</p>
+                    <p>外展隊 Ah Kiu 立刻聯繫執法人員處理社區壞份子，同時確保阿傑以證人與受害青少年的身份接受社工保護與輔導。</p>
+                `,
+                tip: '跨專業救援成功！成功阻斷青少年涉毒犯罪，並保護了兒童個案的安全環境。',
+                options: [
+                    {
+                        text: '【進入結案評估】陪伴一家人返回家中，召開第一次家庭個案會議。',
+                        nextScene: 'ch6_grand_ending'
+                    }
+                ]
+            },
+
+            'ch5_brother_flee': {
+                location: '彩虹商場 地下巷弄',
+                icon: '🏃',
+                chapter: 'CHAPTER 5 • 危機升級',
+                title: '夜色中的迷途',
+                stress: true,
+                text: `
+                    <p>嚴厲的警告激怒了阿傑，他以為你出賣了他，轉身狂奔下樓加入黑衫青年的車輛離去。</p>
+                    <p>雖然今晚未能當場阻止，但你沒有放棄。你立刻啟動外展隊網絡與警民協作機制進行尋人。</p>
+                `,
+                tip: '社工韌性（Resilience）：個案過程常有反覆，保持冷靜與長線跟進是關鍵。',
+                options: [
+                    {
+                        text: '轉為長線個案跟進，先專注於小明的心理復原與媽媽的社區支援。',
+                        trustChange: 0,
+                        energyChange: -15,
+                        nextScene: 'ch6_alternative_ending'
+                    }
+                ]
+            },
+
+            // ---------------------------------------------------------
+            // CHAPTER 6: 彩虹下的曙光與結案報告
+            // ---------------------------------------------------------
+            'ch6_grand_ending': {
+                location: '彩虹邨 / 聖本德小學',
+                icon: '🌈',
+                chapter: 'FINAL CHAPTER • 個案結案報告',
+                title: '彩虹下的童心守護者 (完美結局)',
+                stress: false,
+                text: `
+                    <p class="font-bold text-amber-300">【Yanki 社工 - 個案介入完整報告】</p>
+                    <p>經過數週的專業介入、跨專業協作與家庭系統輔導，張小明個案取得顯著成果：</p>
+                    <p>1. <strong class="text-teal-300">張小明 (仔仔)</strong>：透過 OH 卡情緒輔導，學會表達焦慮。已成功加入彩虹邨社區中心課後託管，上課不再瞌睡，情緒保持穩定。</p>
+                    <p>2. <strong class="text-indigo-300">哥哥張阿傑</strong>：在青少年外展隊陪伴下脫離不良同輩，現已入讀職業訓練局 (VTC) 汽車維修課程，建立正向自我價值。</p>
+                    <p>3. <strong class="text-rose-300">家庭與社區系統</strong>：媽媽獲得支援減輕工作壓力；Yanki 在聖本德小學推廣的「識破偽裝毒品與情緒管理」講座榮獲教育局優良案例提名。</p>
+                    <p>當你再次走過彩虹邨標誌性的彩色外牆時，小明和阿傑在球場向你揮手大喊：「Yanki 姐姐！」</p>
+                    <p class="italic text-teal-200">—— 用專業與陪伴，成為孩子生命中最堅固的一道彩虹。</p>
+                `,
+                tip: '恭喜你！完成了一次完美的社工到校與社區介入體驗！',
+                options: [
+                    {
+                        text: '🏆 查看個人社工專業評級與統計',
+                        nextScene: 'show_stats'
+                    },
+                    {
+                        text: '🔄 重新開始遊戲 (體驗不同選擇路線)',
+                        nextScene: 'restart'
+                    }
+                ]
+            },
+
+            'ch6_alternative_ending': {
+                location: '彩虹邨 聖本德小學',
+                icon: '🌤️',
+                chapter: 'FINAL CHAPTER • 長線跟進日誌',
+                title: '彩虹總在風雨後 (長線跟進結案)',
+                stress: false,
+                text: `
+                    <p class="font-bold text-amber-300">【Yanki 社工 - 個案跟進摘要】</p>
+                    <p>雖然過程充滿曲折，但在你的堅持與不放棄下，個案逐步展現曙光：</p>
+                    <p>小明在你的持續陪伴下，學會了在情緒失控時使用社工給予的「冷靜卡」。媽媽也獲得了社區經濟援助。</p>
+                    <p>三個星期後，阿傑在外展隊的協助下主動前往社工中心求助，正式離開了不良同輩圈。這是一場漫長但值得的馬拉松。</p>
+                    <p class="italic text-slate-300">「社工的工作從不是一蹴而就的奇蹟，而是在黑暗中默默點亮一盞燈。」</p>
+                `,
+                tip: '感謝你的付出！社工的堅韌是案主改變的最大動力。',
+                options: [
+                    {
+                        text: '🏆 查看個人社工專業評級',
+                        nextScene: 'show_stats'
+                    },
+                    {
+                        text: '🔄 重新開始遊戲',
+                        nextScene: 'restart'
+                    }
+                ]
+            },
+
+            'show_stats': {
+                location: '社工辦公室',
+                icon: '📊',
+                chapter: 'GAME OVER • 結算評估',
+                title: 'Yanki 的社工專業執照評級',
+                stress: false,
+                text: `
+                    <div class="space-y-2 bg-slate-800 p-3 rounded-xl border border-teal-500/40">
+                        <h3 class="font-bold text-amber-300 text-sm border-b border-slate-700 pb-1">您的社工表現統計：</h3>
+                        <p>• 剩餘社工能量 (Energy)：<strong id="final-energy" class="text-amber-400">100</strong> / 100</p>
+                        <p>• 案主信任度 (Trust Level)：<strong id="final-trust" class="text-rose-400">80%</strong></p>
+                        <p>• 收集到的個案關鍵線索：<strong id="final-clues" class="text-teal-300">0</strong> 項</p>
+                        <div id="rank-box" class="mt-3 p-2.5 bg-teal-950/80 rounded-lg border border-teal-400 text-center font-bold text-teal-200">
+                            評級計算中...
+                        </div>
+                    </div>
+                `,
+                tip: '專業社工需要在關懷同理、危機處理與個人身心能量調適之間取得平衡。',
+                options: [
+                    {
+                        text: '🔄 再次體驗《彩虹邨社工日誌》',
+                        nextScene: 'restart'
+                    }
+                ]
+            }
+        };
+
+        // Render Scene Logic
+        function renderScene(sceneKey) {
+            if (sceneKey === 'restart') {
+                gameState.energy = 100;
+                gameState.trust = 35;
+                gameState.clues = [];
+                gameState.chapter = 1;
+                gameState.currentScene = 'ch1_start';
+                renderScene('ch1_start');
+                return;
+            }
+
+            const scene = SCENES[sceneKey];
+            if (!scene) return;
+
+            gameState.currentScene = sceneKey;
+
+            // Update Top Header Info
+            document.getElementById('current-location').innerHTML = `<i class="fa-solid fa-location-dot mr-1"></i>${scene.location}`;
+            document.getElementById('stat-energy').innerText = `${gameState.energy}`;
+            document.getElementById('stat-trust').innerText = `${gameState.trust}%`;
+
+            // Update Scene Header Card
+            document.getElementById('scene-icon').innerText = scene.icon || '📜';
+            document.getElementById('scene-chapter').innerText = scene.chapter || 'CHAPTER';
+            document.getElementById('scene-title').innerText = scene.title || '社工日誌';
+
+            // Stress Crisis Badge
+            const stressBadge = document.getElementById('stress-badge');
+            if (scene.stress) {
+                stressBadge.classList.remove('hidden');
+            } else {
+                stressBadge.classList.add('hidden');
+            }
+
+            // Render Narrative Text
+            const narrativeBox = document.getElementById('narrative-text');
+            narrativeBox.innerHTML = scene.text;
+
+            // Render Social Worker Tip Box
+            const tipBox = document.getElementById('social-worker-tip');
+            const tipText = document.getElementById('tip-text');
+            if (scene.tip) {
+                tipText.innerText = scene.tip;
+                tipBox.classList.remove('hidden');
+            } else {
+                tipBox.classList.add('hidden');
+            }
+
+            // Stats Ending Scene Handling
+            if (sceneKey === 'show_stats') {
+                setTimeout(() => {
+                    const finalEnergy = document.getElementById('final-energy');
+                    const finalTrust = document.getElementById('final-trust');
+                    const finalClues = document.getElementById('final-clues');
+                    const rankBox = document.getElementById('rank-box');
+
+                    if (finalEnergy) finalEnergy.innerText = gameState.energy;
+                    if (finalTrust) finalTrust.innerText = `${gameState.trust}%`;
+                    if (finalClues) finalClues.innerText = gameState.clues.length;
+
+                    if (rankBox) {
+                        let rank = '🌟 卓越註冊社工 (RSW Master)';
+                        let desc = '您完美展現了同理心、專業倫理與跨專業協作，成功拯救了一個瀕臨崩潰的家庭！';
+                        
+                        if (gameState.trust < 50 || gameState.energy < 30) {
+                            rank = '💙 熱心成長中社工 (Dedicated RSW)';
+                            desc = '您展現了關懷與熱情，但在危機處理與能量管理上仍有進步空間。';
+                        }
+                        
+                        rankBox.innerHTML = `<div class="text-sm font-black text-amber-300">${rank}</div><div class="text-[10px] text-slate-300 mt-1 font-normal">${desc}</div>`;
+                    }
+                }, 50);
+            }
+
+            // Render Options Buttons
+            const optionsBox = document.getElementById('options-container');
+            optionsBox.innerHTML = '';
+
+            scene.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `choice-btn w-full text-left p-3 bg-slate-800 hover:bg-teal-700/80 active:bg-teal-800 text-slate-100 text-xs rounded-xl border border-slate-700 hover:border-teal-400/60 shadow-md flex justify-between items-center group space-x-2`;
+
+                btn.innerHTML = `
+                    <span class="leading-relaxed flex-1">${opt.text}</span>
+                    <i class="fa-solid fa-chevron-right text-teal-400 group-hover:translate-x-1 transition-transform text-xs shrink-0"></i>
+                `;
+
+                btn.onclick = () => {
+                    // Update Game State Values
+                    if (opt.trustChange) {
+                        gameState.trust = Math.min(100, Math.max(0, gameState.trust + opt.trustChange));
+                    }
+                    if (opt.energyChange) {
+                        gameState.energy = Math.min(100, Math.max(0, gameState.energy + opt.energyChange));
+                    }
+                    if (opt.clue) {
+                        addClue(opt.clue.title, opt.clue.detail);
+                    }
+
+                    // Render Next Scene
+                    renderScene(opt.nextScene);
+                };
+
+                optionsBox.appendChild(btn);
+            });
+
+            // Update Clues List in Notebook
+            updateNotebookUI();
+        }
+
+        // Update Notebook UI Content
+        function updateNotebookUI() {
+            const cluesList = document.getElementById('clues-list');
+            if (!cluesList) return;
+
+            if (gameState.clues.length === 0) {
+                cluesList.innerHTML = `<p class="text-slate-500 italic">暫未收集到重要線索，繼續推進劇情吧...</p>`;
+            } else {
+                cluesList.innerHTML = gameState.clues.map(c => `
+                    <div class="bg-slate-900/90 p-2 rounded-lg border border-teal-500/30">
+                        <div class="font-bold text-teal-300 flex items-center">
+                            <i class="fa-solid fa-check-circle mr-1 text-[10px]"></i>${c.title}
+                        </div>
+                        <div class="text-[9px] text-slate-300 mt-0.5 leading-tight">${c.detail}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Toggle Notebook Modal
+        function toggleNotebook() {
+            const modal = document.getElementById('notebook-modal');
+            const badge = document.getElementById('notebook-badge');
+            if (modal) {
+                modal.classList.toggle('hidden');
+            }
+            if (badge) {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Initialize Game
+        window.onload = function() {
+            renderScene('ch1_start');
+        };
+    </script>
+</body>
+</html>
